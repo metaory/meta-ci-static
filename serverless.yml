@@ -26,12 +26,6 @@ provider:
         - s3:*
       Resource: arn:aws:s3:::${self:custom.bucketName}
 
-# package:
-#   exclude:
-#     - '*'
-#   include:
-#     - serverless.yml
-
 resources:
   Resources:
     BundleBucket:
