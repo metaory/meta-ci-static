@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>CI-Static</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+
+<body>
+  <div id="app">
+    <h1>{{ count }}</h1>
+    <button @click="++count">increment ++</button>
+    <button @click="--count">decrement --</button>
+    <h5>{{ version }}</h5>
+  </div>
+</body>
+
+<script>
+  new Vue({
+    el: '#app',
+    data: {
+      count: 0,
+      version: 'v1.0.0'
+    }
+  })
+</script>
+
+<style>
+  #app {
+    display: grid;
+    grid-gap: 20px;
+    justify-content: center;
+    text-align: center;
+  }
+
+  button {
+    height: 40px
+  }
+</style>
+
+</html>

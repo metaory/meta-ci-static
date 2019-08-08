@@ -1,0 +1,66 @@
+service: meta-ci-demo
+
+custom:
+  bucketName: ${self:provider.stage}-meta-ci-demo
+  s3Sync:
+    - bucketName: ${self:custom.bucketName}
+      localDir: src
+  remover:
+    buckets:
+       - ${self:custom.bucketName}
+  pseudoParameters:
+    allowReferences: true
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  profile: default
+  region: ap-southeast-1
+  stage: ${opt:stage, 'dev'}
+  environment:
+    NODE_ENV: ${self:provider.stage}
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:*
+      Resource: arn:aws:s3:::${self:custom.bucketName}
+
+# package:
+#   exclude:
+#     - '*'
+#   include:
+#     - serverless.yml
+
+resources:
+  Resources:
+    BundleBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        AccessControl: PublicRead
+        BucketName: ${self:custom.bucketName}
+        WebsiteConfiguration:
+          IndexDocument: 'index.html'
+    BundleBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: '#{BundleBucket}'
+        PolicyDocument:
+          Statement:
+            - Sid: PublicReadGetObject
+              Effect: Allow
+              Principal: "*"
+              Action:
+                - s3:GetObject
+              Resource: arn:aws:s3:::#{BundleBucket}/*
+  Outputs:
+    ClientEndpoint:
+      Description: S3 endpoint
+      Value: '#{BundleBucket.WebsiteURL}'
+      Export:
+        Name: ${self:service}:${self:provider.stage}:ClientEndpoint
+
+plugins:
+  - serverless-s3-sync
+  - serverless-s3-remover
+  - serverless-pseudo-parameters
